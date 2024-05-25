@@ -1,0 +1,11 @@
+{
+  "/not-found": "app/not-found.js",
+  "/login/page": "app/login/page.js",
+  "/profile/page": "app/profile/page.js",
+  "/Cold/page": "app/Cold/page.js",
+  "/api/cookie/route": "app/api/cookie/route.js",
+  "/api/tags/get/route": "app/api/tags/get/route.js",
+  "/api/staff/get/route": "app/api/staff/get/route.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/api/Lead/get/route": "app/api/Lead/get/route.js"
+}
