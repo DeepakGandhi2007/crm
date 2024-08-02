@@ -11,66 +11,32 @@ const Graphs = () => {
   const [loading, setLoading] = useState(false);
   const [lastFetchTime, setLastFetchTime] = useState(null);
   const [timeRemaining, setTimeRemaining] = useState(null);
-  const [finalData, setFinalData] = useState([])
 
- const getData = async () => {
-  setLoading(true);
-  try {
-    const response = await axios.get("/api/facebook/get");
-    const itemsWithoutDailyBudget = response.data.data.filter(item => !item.dailyBudget);
-    const campaignIdsWithoutDailyBudget = itemsWithoutDailyBudget.map(item => item.campaignId);
+  const getData = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get("/api/facebook/get");
 
-    setDevData(response.data.data);
-    
-    let additionalData = [];
-         if (campaignIdsWithoutDailyBudget.length > 0) {
-          try {
-            const response2 = await axios.post("/api/facebook/nonbudget", { campaignIds: campaignIdsWithoutDailyBudget });
-            const additionalData = response2.data.data;
-            setFinalData(additionalData)
-          } catch (error) {
-            console.error("Error fetching additional data:", error);
-          }
-        }
-  } catch (error) {
-    console.error("Error fetching data:", error);
-  } finally {
-   
-    setTimeout(() => {
-     setLoading(false);
-  }, 1000);
-    setLastFetchTime(Date.now());
-  }
-};
+      setDevData(response.data.data);
 
-    
-       
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
 
-  useEffect(() => {
-    const dailyBudgetMap = new Map();
-    finalData.forEach((campaign) => {
-      campaign.data?.forEach((adSet) => {
-        if (adSet.effective_status === "ACTIVE") {
-          dailyBudgetMap.set(campaign.campaignId, adSet.daily_budget);
-        }
-      });
-    });
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+      setLastFetchTime(Date.now());
+    }
+  };
 
-    devData.forEach((campaign) => {
-      const dailyBudget = dailyBudgetMap.get(campaign.campaignId);
-      if (dailyBudget) {
-        campaign.dailyBudget = dailyBudget;
-      }
-    });
-
-  }, [finalData]);
 
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (lastFetchTime) {
         const elapsedTime = Date.now() - lastFetchTime;
-        const fiveMinutes = 5 * 60 * 1000;  
+        const fiveMinutes = 5 * 60 * 1000;
         const remainingTime = Math.max(fiveMinutes - elapsedTime, 0);
 
         setTimeRemaining(remainingTime);
@@ -80,7 +46,6 @@ const Graphs = () => {
     return () => clearInterval(intervalId);
   }, [lastFetchTime]);
 
-  // Format the remaining time into minutes and seconds
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60000);
     const seconds = Math.floor((time % 60000) / 1000);
@@ -89,7 +54,7 @@ const Graphs = () => {
 
   const isButtonDisabled = () => {
     if (!lastFetchTime) return false;
-    const fiveMinutes = 5 * 60 * 1000; 
+    const fiveMinutes = 5 * 60 * 1000;
     return Date.now() - lastFetchTime < fiveMinutes;
   };
 
@@ -121,11 +86,10 @@ const Graphs = () => {
               {tabs.map((tab, index) => (
                 <button
                   key={tab.id}
-                  disabled={loading || devData.length == 0 }
+                  disabled={loading || devData.length == 0}
                   onClick={() => setTabIndex(index)}
-                  className={`!mb-0 !mt-0 px-3 py-2 ${
-                    tabIndex == index ? "bg-gray-200" : "disabled:hover:bg-transparent hover:bg-gray-300"
-                  } font-Satoshi text-lg rounded-lg`}
+                  className={`!mb-0 !mt-0 px-3 py-2 ${tabIndex == index ? "bg-gray-200" : "disabled:hover:bg-transparent hover:bg-gray-300"
+                    } font-Satoshi text-lg rounded-lg`}
                 >
                   Data {index + 1}
                 </button>
@@ -136,15 +100,15 @@ const Graphs = () => {
                 disabled={loading || isButtonDisabled()}
                 className={`!mb-0 !mt-0  ${isButtonDisabled() ? "w-48" : 'w-28'} disabled:bg-gray-300 disabled:hover:border-gray-700  ml-10   py-2  hover:bg-[#42A5F5]  !border-[1px] transition-all duration-300 border-gray-700 hover:border-blue-300 font-[500] font-Satoshi text-lg rounded-lg`}
               >
-                {loading ? <Spin /> : devData.length != 0 ? isButtonDisabled() ? 'Refresh in' + ' '+formatTime(timeRemaining) : 'Refresh' : "Load"}
+                {loading ? <Spin /> : devData.length != 0 ? isButtonDisabled() ? 'Refresh in' + ' ' + formatTime(timeRemaining) : 'Refresh' : "Load"}
               </button>
             </div>
 
-           
+
 
             <div className={`w-[80%] `}>
-               {tabIndex == 0 && (
-                <TableOne devData={devData} finalData={finalData} loading={loading} />
+              {tabIndex == 0 && (
+                <TableOne devData={devData} loading={loading} />
               )}
               {tabIndex == 1 && (
                 <TableTwo devData={devData} loading={loading} />

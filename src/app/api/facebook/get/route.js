@@ -37,77 +37,112 @@ function get_country_from_campaign_name(campaign_name) {
 }
 
 
-async function fetchAllData(url, params) {
-    let results = [];
-    let response = await axios.get(url, { params });
-    results = results.concat(response.data.data);
+const getCampaignsAndAdsets = async (adAccountId) => {
+    const url = `https://graph.facebook.com/v16.0/${adAccountId}/campaigns`;
+    const params = {
+        fields: 'id,name,daily_budget,adsets{id,daily_budget}',
+        access_token: accessToken
+    };
+    const response = await axios.get(url, { params });
+    return response.data.data;
+};
 
-    while (response.data.paging && response.data.paging.next) {
-        response = await axios.get(response.data.paging.next);
-        results = results.concat(response.data.data);
-    }
+const getInsights = async (adAccountId) => {
+    const url = `https://graph.facebook.com/v16.0/${adAccountId}/insights`;
+    const params = {
+        fields: 'campaign_id,spend,actions',
+        time_range: JSON.stringify({ since: reportDate, until: reportDate }),
+        level: 'campaign',
+        access_token: accessToken
+    };
+    const response = await axios.get(url, { params });
+    return response.data.data;
+};
+const processCampaignData = async () => {
+    const updates = {};
+    let totalBudget = 0;
+    let totalSpend = 0;
+    let totalResults = 0;
 
-    return results;
-}
 
+    for (const adAccountId of adAccounts) {
+        const campaigns = await getCampaignsAndAdsets(adAccountId);
+        const insights = await getInsights(adAccountId);
+        const insightsMap = {};
+        insights.forEach(insight => {
+            insightsMap[insight.campaign_id] = insight;
+        });
 
-async function executeWithRetry(func, args = [], maxRetries = 5, initialDelay = 5000) {
-    let attempt = 0;
+        for (const campaign of campaigns) {
+            const campaignId = campaign.id;
+            const campaignName = campaign.name;
+            let campaignDailyBudget = parseFloat(campaign.daily_budget || 0) / 100;  // Converting to AED
 
-    while (attempt < maxRetries) {
-        try {
-            return await func(...args);
-        } catch (error) {
-            attempt++;
-            if (attempt >= maxRetries) {
-                throw error;
+            const country = get_country_from_campaign_name(campaignName);
+
+            if (campaignDailyBudget === 0) {
+                const adsets = campaign.adsets ? campaign.adsets.data : [];
+                const adsetBudget = adsets.reduce((sum, adset) => sum + parseFloat(adset.daily_budget || 0), 0) / 100;
+                campaignDailyBudget = adsetBudget;
             }
-            const waitTime = initialDelay * (2 ** attempt) + Math.random() * 1000;
-            console.log(`API rate limit reached or error occurred. Retrying in ${waitTime / 1000} seconds...`);
-            await new Promise(resolve => setTimeout(resolve, waitTime));
+
+            // Initialize spend and results
+            let spend = 0;
+            let results = 0;
+
+            // Retrieve insights data
+            if (insightsMap[campaignId]) {
+                const insight = insightsMap[campaignId];
+                spend = parseFloat(insight.spend || 0);
+                const actions = insight.actions || [];
+                results = actions.reduce((sum, action) => action.action_type === 'lead' ? sum + parseInt(action.value) : sum, 0);
+            }
+
+            // Calculate cost per result
+            const costPerResult = results > 0 ? spend / results : 0;
+
+            if (spend > 0) {
+                // Update the campaign details
+                updates[campaignName] = {
+                    campaignName: campaignName,
+                    dailyBudget: campaignDailyBudget,
+                    spend,
+                    results,
+                    costPerResult,
+                    country
+                };
+
+
+                // Update the total values
+                totalBudget += campaignDailyBudget;
+                totalSpend += spend;
+                totalResults += results;
+            }
         }
     }
-}
+
+    const totalCostPerResult = totalResults > 0 ? totalSpend / totalResults : 0;
+    updates["Total"] = {
+        dailyBudget: totalBudget,
+        spend: totalSpend,
+        results: totalResults,
+        costPerResult: totalCostPerResult
+    };
+    return updates;
+};
+
 
 
 export async function GET(request) {
     try {
-        const results = [];
-        const seenCampaignIds = new Set();
-        for (const accountId of adAccounts) {
-            const campaignsResponse = await executeWithRetry(
-                fetchAllData,
-                [`https://graph.facebook.com/v20.0/${accountId}/campaigns`, {
-                    access_token: accessToken,
-                    fields: 'id,name,budget_remaining,daily_budget,adsets{daily_budget,insights{spend}},insights{actions}',
-                    time_range: JSON.stringify({
-                        since: '2024-07-31',
-                        until: '2024-07-31'
-                    }),
-                    filtering: JSON.stringify([{
-                        field: 'spend',
-                        operator: 'GREATER_THAN',
-                        value: 1
-                    }])
-                }]
-            );
-
-            for (const campaign of campaignsResponse) {
-                const country = get_country_from_campaign_name(campaign.name);
-                results.push({
-                    ...campaign,
-                    country
-                });
-            }
-        }
-
+        const data = await processCampaignData();
         return NextResponse.json({
             message: "Results found",
-            data: results
-        });
+            data: data,
 
+        });
     } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching campaign data:', error);
         return NextResponse.json({ error: error.message }, { status: 400 });
     }
 }
