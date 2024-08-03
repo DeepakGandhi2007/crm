@@ -36,17 +36,7 @@ function Invoice() {
         setIsDateInput((prevIsDateInput) => !prevIsDateInput);
     };
 
-    window.addEventListener('beforeunload', function (e) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const leadId = urlParams.get('leadId');
-
-        if (leadId) {
-            // Show a confirmation dialog
-            const confirmationMessage = 'Are you sure you want to leave this page?';
-            e.returnValue = confirmationMessage; // Gecko, Trident, Chrome 34+
-            return confirmationMessage; // Gecko, WebKit, Chrome <34
-        }
-    });
+   
     useEffect(() => {
 
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
