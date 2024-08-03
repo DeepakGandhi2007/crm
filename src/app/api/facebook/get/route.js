@@ -63,6 +63,7 @@ const processCampaignData = async () => {
     let totalBudget = 0;
     let totalSpend = 0;
     let totalResults = 0;
+    let totalCostPerResult = 0;
 
 
     for (const adAccountId of adAccounts) {
@@ -117,11 +118,12 @@ const processCampaignData = async () => {
                 totalBudget += campaignDailyBudget;
                 totalSpend += spend;
                 totalResults += results;
+                totalCostPerResult += costPerResult;
             }
         }
     }
 
-    const totalCostPerResult = totalResults > 0 ? totalSpend / totalResults : 0;
+
     updates["Total"] = {
         dailyBudget: totalBudget,
         spend: totalSpend,
