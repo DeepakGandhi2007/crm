@@ -3,7 +3,6 @@ import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import $ from 'jquery';
 import Calendar from '../components/calender';
 import RootLayout from '../components/layout';
 import Modal from '../components/modal';
