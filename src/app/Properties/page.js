@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import RootLayout from '../components/layout';
 import Modal from '../components/modal';
-import PropertyModal from '../components/PropertyModal';
 
 function Property() {
     const [properties, setProperties] = useState([]);
@@ -43,7 +42,6 @@ function Property() {
 
     return (
         <RootLayout>
-            {isModalOpen && <PropertyModal propertyId={selectedProperty} onClose={toggleModal} />}
             <div className='container-fluid'>
                 <div className='row'>
                     <div className="col-12">
