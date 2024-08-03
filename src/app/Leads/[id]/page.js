@@ -3,7 +3,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import RootLayout from '@/app/components/layout';
-import ScrollableTabsButtonForce from '@/app/components/Tabs';
 
 const LeadDetails = ({ params }) => {
     const id = params?.id;
@@ -55,7 +54,6 @@ const LeadDetails = ({ params }) => {
                         </div>
                         <div className='lead-header bg-white p-3'>
                             <div className="top-lead-menu">
-                                <ScrollableTabsButtonForce lead={lead} activityLog={activityLog} />
                             </div>
 
 
