@@ -19,14 +19,14 @@ const LeadsSchema = new mongoose.Schema({
     },
     AltPhone: {
         type: Number,
-     
+
     },
     Address: {
         type: String,
     },
     Email: {
         type: String,
-     
+
     },
     typeprop: {
         type: String,
@@ -67,6 +67,15 @@ const LeadsSchema = new mongoose.Schema({
     scoreupdateby: {
         type: String,
     },
+    campagincountry: {
+        type: String,
+    },
+    campaignid: {
+        type: String,
+    },
+    adid: {
+        type: String,
+    },
     Doneby: { type: mongoose.Schema.Types.ObjectId, ref: 'Users' },
     tags: { type: mongoose.Schema.Types.ObjectId, ref: 'Tags' },
     marketingtags: { type: mongoose.Schema.Types.ObjectId, ref: 'Tags' },
@@ -80,7 +89,7 @@ const LeadsSchema = new mongoose.Schema({
     LeadAssignedDate: {
         type: Date,
     },
-      timestamp: { type: String,  default: () => new Date().toISOString().slice(0, 10) },
+    timestamp: { type: String, default: () => new Date().toISOString().slice(0, 10) },
 
 
 });
