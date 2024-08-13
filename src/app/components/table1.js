@@ -8,7 +8,7 @@ const TableOne = ({ devData, loading }) => {
 
   return (
     <div
-      className={`w-full transition-all duration-200 h-[500px] mt-10 relative overflow-y-auto  "shadow-md rounded-lg" "flex justify-center items-center"`}
+      className={`w-full transition-all duration-200 h-[500px] mt-2 relative overflow-y-auto shadow-md rounded-lg flex justify-center items-center`}
     >
       {devData.length != 0 && !loading ? (
         <table class="w-full   border-collapse  text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -57,7 +57,7 @@ const TableOne = ({ devData, loading }) => {
       ) : loading ? (
         <Spin />
       ) : (
-        <p className="text-3xl !m-0 font-Satoshi font-[500]">
+        <p className="text-3xl text-center !m-0 font-Satoshi font-[500]">
           No data available.
         </p>
       )}

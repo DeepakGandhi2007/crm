@@ -80,7 +80,7 @@ const TableTwo = ({ devData, loading }) => {
 
   return (
     <div
-      className={`w-full transition-all duration-200 mt-10 relative overflow-y-auto ${
+      className={`w-full transition-all duration-200 mt-2 relative overflow-y-auto ${
         devData.length !== 0 && loading
           ? "shadow-md rounded-lg"
           : "flex justify-center items-center"

@@ -57,19 +57,19 @@ const Graphs = () => {
   const tabs = [
     {
       id: 0,
-      name: "Graph 1",
+      name: "Active Campaigns",
     },
     {
       id: 1,
-      name: "Graph 2",
+      name: "Country Wise",
     },
     {
       id: 2,
-      name: "Graph 3",
+      name: "Agent Wise",
     },
     {
       id: 3,
-      name: "Graph 4",
+      name: "Tiktok and Google",
     },
   ];
 
@@ -90,7 +90,7 @@ const Graphs = () => {
                       : "disabled:hover:bg-transparent hover:bg-gray-300"
                   } font-Satoshi text-lg rounded-lg`}
                 >
-                  Data {index + 1}
+                  {tab.name}
                 </button>
               ))}
 
@@ -116,6 +116,7 @@ const Graphs = () => {
             </div>
 
             <div className={`w-[80%] `}>
+            <p className="!m-0">Showing Results for</p>
               {tabIndex == 0 && (
                 <TableOne devData={devData} loading={loading} />
               )}
