@@ -18,19 +18,15 @@ const Graphs = () => {
       const response = await axios.get("/api/facebook/get");
 
       setDevData(response.data.data);
-
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
-
       setTimeout(() => {
         setLoading(false);
       }, 1000);
       setLastFetchTime(Date.now());
     }
   };
-
-
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -88,8 +84,11 @@ const Graphs = () => {
                   key={tab.id}
                   disabled={loading || devData.length == 0}
                   onClick={() => setTabIndex(index)}
-                  className={`!mb-0 !mt-0 px-3 py-2 ${tabIndex == index ? "bg-gray-200" : "disabled:hover:bg-transparent hover:bg-gray-300"
-                    } font-Satoshi text-lg rounded-lg`}
+                  className={`!mb-0 !mt-0 px-3 py-2 ${
+                    tabIndex == index
+                      ? "bg-gray-200"
+                      : "disabled:hover:bg-transparent hover:bg-gray-300"
+                  } font-Satoshi text-lg rounded-lg`}
                 >
                   Data {index + 1}
                 </button>
@@ -98,13 +97,23 @@ const Graphs = () => {
               <button
                 onClick={getData}
                 disabled={loading || isButtonDisabled()}
-                className={`!mb-0 !mt-0  ${isButtonDisabled() ? "w-48" : 'w-28'} disabled:bg-gray-300 disabled:hover:border-gray-700  ml-10   py-2  hover:bg-[#42A5F5]  !border-[1px] transition-all duration-300 border-gray-700 hover:border-blue-300 font-[500] font-Satoshi text-lg rounded-lg`}
+                className={`!mb-0 !mt-0  ${
+                  isButtonDisabled() ? "w-48" : "w-28"
+                } disabled:bg-gray-300 disabled:hover:border-gray-700  ml-10   py-2  hover:bg-[#42A5F5]  !border-[1px] transition-all duration-300 border-gray-700 hover:border-blue-300 font-[500] font-Satoshi text-lg rounded-lg`}
               >
-                {loading ? <Spin /> : devData.length != 0 ? isButtonDisabled() ? 'Refresh in' + ' ' + formatTime(timeRemaining) : 'Refresh' : "Load"}
+                {loading ? (
+                  <Spin />
+                ) : devData.length != 0 ? (
+                  isButtonDisabled() ? (
+                    "Refresh in" + " " + formatTime(timeRemaining)
+                  ) : (
+                    "Refresh"
+                  )
+                ) : (
+                  "Load"
+                )}
               </button>
             </div>
-
-
 
             <div className={`w-[80%] `}>
               {tabIndex == 0 && (

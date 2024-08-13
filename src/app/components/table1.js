@@ -10,7 +10,6 @@ const TableOne = ({ devData, loading }) => {
     <div
       className={`w-full transition-all duration-200 h-[500px] mt-10 relative overflow-y-auto  "shadow-md rounded-lg" "flex justify-center items-center"`}
     >
-
       {devData.length != 0 && !loading ? (
         <table class="w-full   border-collapse  text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <thead class="text-xs sticky top-0 left-0 text-gray-700 uppercase bg-gray-50  ">
@@ -36,18 +35,23 @@ const TableOne = ({ devData, loading }) => {
             {dataArray.map(([campaignName, details], index) => (
               <tr
                 key={index}
-                className={`bg-white border-b hover:bg-gray-50 ${index === dataArray.length - 1 ? 'bg-green-500 text-white' : ''
-                  }`}
+                className={` border-b hover:bg-gray-50 ${
+                  index == dataArray.length - 1
+                    ? "bg-green-500 text-black"
+                    : "bg-white"
+                }`}
               >
                 <td className="px-3 py-3 text-gray-900">{campaignName}</td>
-                <td className="px-3 py-3 text-gray-900">{details.dailyBudget}</td>
+                <td className="px-3 py-3 text-gray-900">
+                  {details.dailyBudget}
+                </td>
                 <td className="px-3 py-3 text-gray-900">{details.spend}</td>
                 <td className="px-2 py-3 text-gray-900">{details.results}</td>
-                <td className="px-2 py-3 text-gray-900">{details.costPerResult}</td>
+                <td className="px-2 py-3 text-gray-900">
+                  {details.costPerResult.toFixed(2)}
+                </td>
               </tr>
-
             ))}
-
           </tbody>
         </table>
       ) : loading ? (
